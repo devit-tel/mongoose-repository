@@ -1,0 +1,5 @@
+{
+    "presets": ["stage-0", "env"],
+    "plugins": ["transform-decorators-legacy"]
+  }
+  
