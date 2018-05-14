@@ -3,10 +3,10 @@ class BaseRepository {
 	constructor(mongooseModel: any) {
 		this.model = mongooseModel
 	}
-	async findOne(query: any) {
+	public async findOne(query: any): Promise<any> {
 		return this.model.findOne(query)
 	}
-	async find(query: any = {}, paginate: any = {}) {
+	public async find(query: any = {}, paginate: any = {}): Promise<any> {
 		let page = {
 			items: [],
 			total: 0,
@@ -42,13 +42,13 @@ class BaseRepository {
 			return page
 		}
     }
-    async create(data: any) {
+    public async create(data: any): Promise<any> {
         return this.model.create(data)
     }
-    async update(query: any, data: any) {
+    public async update(query: any, data: any): Promise<any> {
         return this.model.findOneAndUpdate(query, data, { new: true })
     }
-    async delete(data: any) {
+    public async delete(data: any): Promise<any> {
         return this.model.remove(data)
     }
 }
