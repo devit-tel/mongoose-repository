@@ -1,8 +1,9 @@
 {
   "name": "@spksoft/mongoose-repository",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "A mongoose Repository based",
   "main": "./distribution/index.js",
+  "types": "./distribution/index.d.ts",
   "scripts": {
     "clean": "rm -rf distribution && mkdir distribution",
     "build": "npm run clean && tsc",
