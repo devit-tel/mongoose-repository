@@ -1,11 +1,11 @@
 {
   "name": "@spksoft/mongoose-repository",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A mongoose Repository based",
   "main": "./distribution/index.js",
   "scripts": {
     "clean": "rm -rf distribution && mkdir distribution",
-    "build": "npm run clean && babel -d ./distribution ./src -s",
+    "build": "npm run clean && tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [

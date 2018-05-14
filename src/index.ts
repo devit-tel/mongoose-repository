@@ -1,11 +1,12 @@
 class BaseRepository {
-	constructor(mongooseModel) {
+	model: any = undefined
+	constructor(mongooseModel: any) {
 		this.model = mongooseModel
 	}
-	async findOne(query) {
+	async findOne(query: any) {
 		return this.model.findOne(query)
 	}
-	async find(query = {}, paginate = {}) {
+	async find(query: any = {}, paginate: any = {}) {
 		let page = {
 			items: [],
 			total: 0,
@@ -13,8 +14,6 @@ class BaseRepository {
 			page: paginate.page || 1,
 			hasNext: false
 		}
-		// handle query like example: name=john,yana,george
-		// console.log('find query >>>> ', query)
 		if (query) {
 			Object.keys(query).map(key => {
 				if (typeof query[key] === 'string') {
@@ -23,9 +22,9 @@ class BaseRepository {
 			})
 		}
 
-		if (model.paginate && (paginate.page !== undefined && paginate.limit !== undefined)) {
-			if (paginate.page < 1) throw new BadRequestError('page start with 1')
-			let result = await model.paginate(query, {
+		if (this.model.paginate && (paginate.page !== undefined && paginate.limit !== undefined)) {
+			if (paginate.page < 1) throw new Error('page start with 1')
+			let result = await this.model.paginate(query, {
 				limit: +paginate.limit,
 				page: +paginate.page,
 				sort: paginate.sort
@@ -37,19 +36,19 @@ class BaseRepository {
 			page.hasNext = (result.page * result.limit) < result.total
 			return page
 		} else {
-			let result = await model.find(query)
+			let result = await this.model.find(query)
 			page.items = result
 			page.total = result.length
 			return page
 		}
     }
-    async create(data) {
+    async create(data: any) {
         return this.model.create(data)
     }
-    async update(query, data) {
+    async update(query: any, data: any) {
         return this.model.findOneAndUpdate(query, data, { new: true })
     }
-    async delete(data) {
+    async delete(data: any) {
         return this.model.remove(data)
     }
 }
