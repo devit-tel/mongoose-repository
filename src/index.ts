@@ -6,7 +6,7 @@ class BaseRepository {
 	public async findOne(query: any): Promise<any> {
 		return this.model.findOne(query)
 	}
-	public async find(query: any = {}, paginate: any = {}): Promise<any> {
+	public async find(query: any = {}, paginate: any = {}, populate: any = {}): Promise<any> {
 		let page = {
 			items: [],
 			total: 0,
@@ -24,11 +24,20 @@ class BaseRepository {
 
 		if (this.model.paginate && (paginate.page !== undefined && paginate.limit !== undefined)) {
 			if (paginate.page < 1) throw new Error('page start with 1')
-			let result = await this.model.paginate(query, {
-				limit: +paginate.limit,
-				page: +paginate.page,
-				sort: paginate.sort
-			})
+			let result = null
+			if (populate) {
+				result = await this.model.paginate(query, {
+					limit: +paginate.limit,
+					page: +paginate.page,
+					sort: paginate.sort
+				}).populate(populate)
+			} else {
+				result = await this.model.paginate(query, {
+					limit: +paginate.limit,
+					page: +paginate.page,
+					sort: paginate.sort
+				})
+			}
 			page.items = result.docs
 			page.total = result.total
 			page.limit = result.limit
@@ -36,7 +45,12 @@ class BaseRepository {
 			page.hasNext = (result.page * result.limit) < result.total
 			return page
 		} else {
-			let result = await this.model.find(query)
+			let result = null
+			if (populate && populate !== undefined) {
+				result = await this.model.find(query).populate(populate)
+			} else {
+				result = await this.model.find(query)
+			}
 			page.items = result
 			page.total = result.length
 			return page
