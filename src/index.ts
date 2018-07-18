@@ -25,7 +25,7 @@ class BaseRepository {
 		if (this.model.paginate && (paginate.page !== undefined && paginate.limit !== undefined)) {
 			if (paginate.page < 1) throw new Error('page start with 1')
 			let result = null
-			if (populate) {
+			if (populate && populate !== undefined) {
 				result = await this.model.paginate(query, {
 					limit: +paginate.limit,
 					page: +paginate.page,
