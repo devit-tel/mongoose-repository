@@ -61,7 +61,10 @@ class BaseRepository {
     }
     public async update(query: any, data: any): Promise<any> {
         return this.model.findOneAndUpdate(query, data, { new: true })
-    }
+	}
+	public async upsert(query: any, data: any) : Promise<any> {
+		return this.model.findOneAndUpdate(query, data, { upsert: true })
+	}
     public async delete(data: any): Promise<any> {
         return this.model.delete
 	    ? this.model.delete(data)
