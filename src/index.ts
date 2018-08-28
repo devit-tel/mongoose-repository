@@ -29,8 +29,9 @@ class BaseRepository {
 				result = await this.model.paginate(query, {
 					limit: +paginate.limit,
 					page: +paginate.page,
-					sort: paginate.sort
-				}).populate(populate)
+					sort: paginate.sort,
+					populate: populate
+				})
 			} else {
 				result = await this.model.paginate(query, {
 					limit: +paginate.limit,
