@@ -4,7 +4,7 @@ class BaseRepository {
 		this.model = mongooseModel
 	}
 	public async findOne(query: any, populate: any): Promise<any> {
-		if (populate !== '') {
+		if (populate && populate !== undefined && populate !== '') {
 			return this.model.findOne(query).populate(populate)
 		} else {
 			return this.model.findOne(query)
