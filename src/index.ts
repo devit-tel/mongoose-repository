@@ -3,8 +3,12 @@ class BaseRepository {
 	constructor(mongooseModel: any) {
 		this.model = mongooseModel
 	}
-	public async findOne(query: any): Promise<any> {
-		return this.model.findOne(query)
+	public async findOne(query: any, populate: any): Promise<any> {
+		if (populate !== '') {
+			return this.model.findOne(query).populate(populate)
+		} else {
+			return this.model.findOne(query)
+		}
 	}
 	public async find(query: any = {}, paginate: any = {}, populate: any): Promise<any> {
 		let page = {
@@ -70,7 +74,7 @@ class BaseRepository {
         return this.model.delete
 	    ? this.model.delete(data)
             : this.model.remove(data)
-    }
+	}
 }
 
 export default BaseRepository
