@@ -3,11 +3,14 @@ class BaseRepository {
 	constructor(mongooseModel: any) {
 		this.model = mongooseModel
 	}
-	public async findOne(query: any, populate: any): Promise<any> {
+	public async findOne(query: any, options: any): Promise<any> {
+		let  option = {...options}
+		let populate = option.populate
+		delete option.populate
 		if (populate && populate !== undefined && populate !== '') {
-			return this.model.findOne(query).populate(populate)
+			return this.model.findOne(query, option).populate(populate)
 		} else {
-			return this.model.findOne(query)
+			return this.model.findOne(query, option)
 		}
 	}
 	public async find(query: any = {}, paginate: any = {}, populate: any): Promise<any> {
