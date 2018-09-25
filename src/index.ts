@@ -13,12 +13,12 @@ class BaseRepository {
 			return this.model.findOne(query, option)
 		}
 	}
-	public async find(query: any = {}, paginate: any = {}, populate: any): Promise<any> {
+	public async find(query: any = {}, options: any): Promise<any> {
 		let page = {
 			items: [],
 			total: 0,
-			limit: paginate.limit || 0,
-			page: paginate.page || 1,
+			limit: options.limit || 0,
+			page: options.page || 1,
 			hasNext: false
 		}
 		if (query) {
@@ -29,21 +29,21 @@ class BaseRepository {
 			})
 		}
 
-		if (this.model.paginate && (paginate.page !== undefined && paginate.limit !== undefined)) {
-			if (paginate.page < 1) throw new Error('page start with 1')
+		if (this.model.paginate && (options.page !== undefined && options.limit !== undefined)) {
+			if (options.page < 1) throw new Error('page start with 1')
 			let result = null
-			if (populate && populate !== undefined && populate !== '') {
+			if (options.populate && options.populate !== undefined && options.populate !== '') {
 				result = await this.model.paginate(query, {
-					limit: +paginate.limit,
-					page: +paginate.page,
-					sort: paginate.sort,
-					populate: populate
+					limit: +options.limit,
+					page: +options.page,
+					sort: options.sort,
+					populate: options.populate
 				})
 			} else {
 				result = await this.model.paginate(query, {
-					limit: +paginate.limit,
-					page: +paginate.page,
-					sort: paginate.sort
+					limit: +options.limit,
+					page: +options.page,
+					sort: options.sort
 				})
 			}
 			page.items = result.docs
@@ -54,8 +54,8 @@ class BaseRepository {
 			return page
 		} else {
 			let result = null
-			if (populate && populate !== undefined && populate !== '') {
-				result = await this.model.find(query).populate(populate)
+			if (options.populate && options.populate !== undefined && options.populate !== '') {
+				result = await this.model.find(query).populate(options.populate)
 			} else {
 				result = await this.model.find(query)
 			}
