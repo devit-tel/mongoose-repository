@@ -58,3 +58,40 @@ export default async function getUser() {
   return VehicleRepository.find(filter, options)
 }
 ```
+
+### mongoose-repository
+
+```javascript
+// Bar.js
+import repositoryBuilder from '@spksoft/mongoose-repository/repositoryBuilder'
+
+const schemaDefinition = {
+  name: {
+    type: String,
+    require: true
+  },
+  foo: {
+    type: [Number],
+    require: true
+  }
+}
+
+export default repositoryBuilder('Bar', schemaDefinition, 'Barzs')
+//  {
+//      Model,
+//      Schema,
+//      Repository,
+//      schemaDefinition,
+//      default: Repository
+//  }
+```
+
+```javascript
+import Bar from './Bar.js'
+
+Bar.Repository.create({
+    name: 'eiei',
+    foo: [12, 69]
+})
+```
+
