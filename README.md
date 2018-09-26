@@ -6,11 +6,11 @@ A mongoose Repository based
 npm install @spksoft/mongoose-repository
 ```
 
-### Usgae
+### Usage
 user.repository.js file
-```
+```javascript
 import UserModel from './user.model'
-import { MongooseBaseRepository } from '../../libraries/database/repositories/index'
+import MongooseBaseRepository from '@spksoft/mongoose-repository'
 
 class UserRepository extends MongooseBaseRepository {
 
@@ -21,7 +21,7 @@ export default instance
 ```
 
 user.model.js file
-```
+```javascript
 import Mongoose from 'mongoose'
 import MongoosePaginate from 'mongoose-paginate'
 import timestamps from 'mongoose-timestamp'
@@ -38,4 +38,23 @@ Schema.plugin(MongoosePaginate)
 const Model = Mongoose.model('User', Schema)
 export default Model
 
+```
+
+### Example
+find
+```javascript
+import UserRepository from './user.repository.js'
+
+export default async function getUser() {
+  var filter = {
+    name: 'Yana'
+  }
+  var options = {
+    limit: 10, // limit data 10 rows
+    page: 1, // start 1
+    sort: 'username -password', // sort by "username" ascending and "password" descending
+    populate: 'userType'
+  }
+  return VehicleRepository.find(filter, options)
+}
 ```
