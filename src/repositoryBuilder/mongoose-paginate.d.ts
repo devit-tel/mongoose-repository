@@ -1,1 +1,1 @@
-declare module 'mongoose-delete'
+declare module 'mongoose-paginate'
