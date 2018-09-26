@@ -1,6 +1,6 @@
 {
   "name": "@spksoft/mongoose-repository",
-  "version": "1.0.17",
+  "version": "1.0.18",
   "description": "A mongoose Repository based",
   "main": "./distribution/index.js",
   "types": "./distribution/index.d.ts",
