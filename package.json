@@ -37,9 +37,11 @@
     "typescript": "^3.0.3"
   },
   "dependencies": {
-    "mongoose": "^5.2.17",
     "mongoose-delete": "^0.4.0",
     "mongoose-paginate": "^5.0.3",
     "mongoose-timestamp": "^0.6.0"
+  },
+  "peerDependencies": {
+    "mongoose": "^5.2.17"
   }
 }
