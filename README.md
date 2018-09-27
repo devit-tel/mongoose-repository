@@ -1,5 +1,9 @@
 # mongoose-repository
 A mongoose Repository based
+Include Plugin:
+- mongoose-delete (default options: { deletedAt: true, indexFields: true, overrideMethods: true })
+- mongoose-timestamps
+- mongoose-paginate
 
 ### install
 ```
@@ -30,15 +34,6 @@ export default RepositoryBuilder('Bar', schemaDefinition)
 //      schemaDefinition,
 //      default: Repository
 //  }
-```
-
-```javascript
-import Bar from './Bar.js'
-
-Bar.Repository.create({
-    name: 'eiei',
-    foo: [12, 69]
-})
 ```
 
 ### Example
@@ -85,4 +80,13 @@ import UserRepository from './user.repository.js'
 export default async function getUserSchemaDefinition() {
   return UserRepository.schemaDefinition
 }
+```
+
+create
+```javascript
+import UserRepository from './user.repository'
+UserRepository.create({
+    name: 'eiei',
+    foo: [12, 69]
+})
 ```
