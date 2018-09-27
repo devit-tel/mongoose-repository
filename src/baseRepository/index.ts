@@ -15,7 +15,7 @@ class BaseRepository {
   }
   public async find(query: any = {}, options: any): Promise<any> {
     let page = {
-      items: [],
+      data: [],
       total: 0,
       limit: options.limit || 0,
       page: options.page || 1,
@@ -53,7 +53,7 @@ class BaseRepository {
           sort: options.sort
         });
       }
-      page.items = result.docs;
+      page.data = result.docs;
       page.total = result.total;
       page.limit = result.limit;
       page.page = result.page;
@@ -70,7 +70,7 @@ class BaseRepository {
       } else {
         result = await this.model.find(query);
       }
-      page.items = result;
+      page.data = result;
       page.total = result.length;
       return page;
     }

@@ -57,6 +57,6 @@ export default async function getUser() {
     sort: 'username -password', // sort by "username" ascending and "password" descending
     populate: 'userType'
   }
-  return VehicleRepository.find(filter, options)
+  return UserRepository.find(filter, options)
 }
 ```
