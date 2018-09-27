@@ -9,7 +9,6 @@ npm install @spksoft/mongoose-repository
 ### Usage
 user.repository.js file
 ```javascript
-// Bar.js
 import RepositoryBuilder from '@spksoft/mongoose-repository'
 
 const schemaDefinition = {
@@ -43,7 +42,7 @@ Bar.Repository.create({
 ```
 
 ### Example
-find
+find with repository
 ```javascript
 import UserRepository from './user.repository.js'
 
@@ -58,5 +57,32 @@ export default async function getUser() {
     populate: 'userType'
   }
   return UserRepository.find(filter, options)
+}
+```
+
+find with model
+```javascript
+import UserRepository from './user.repository.js'
+
+export default async function getUser() {
+  var filter = {
+    name: 'Yana'
+  }
+  var options = {
+    limit: 10, // limit data 10 rows
+    page: 1, // start 1
+    sort: 'username -password', // sort by "username" ascending and "password" descending
+    populate: 'userType'
+  }
+  return UserRepository.Model.find(filter, options)
+}
+```
+
+get schema definition
+```javascript
+import UserRepository from './user.repository.js'
+
+export default async function getUserSchemaDefinition() {
+  return UserRepository.schemaDefinition
 }
 ```
