@@ -9,35 +9,37 @@ npm install @spksoft/mongoose-repository
 ### Usage
 user.repository.js file
 ```javascript
-import UserModel from './user.model'
-import MongooseBaseRepository from '@spksoft/mongoose-repository'
+// Bar.js
+import RepositoryBuilder from '@spksoft/mongoose-repository'
 
-class UserRepository extends MongooseBaseRepository {
-
+const schemaDefinition = {
+  name: {
+    type: String,
+    require: true
+  },
+  foo: {
+    type: [Number],
+    require: true
+  }
 }
 
-const instance = new UserRepository(UserModel)
-export default instance
+export default RepositoryBuilder('Bar', schemaDefinition)
+//  {
+//      Model,
+//      Schema,
+//      Repository,
+//      schemaDefinition,
+//      default: Repository
+//  }
 ```
 
-user.model.js file
 ```javascript
-import Mongoose from 'mongoose'
-import MongoosePaginate from 'mongoose-paginate'
-import timestamps from 'mongoose-timestamp'
+import Bar from './Bar.js'
 
-export const schemaDefinition = {
-  username: { type: String, required: true, unique: true },
-  password: { type: String }
-}
-
-var Schema = new Mongoose.Schema(schemaDefinition)
-Schema.plugin(timestamps)
-Schema.plugin(MongoosePaginate)
-
-const Model = Mongoose.model('User', Schema)
-export default Model
-
+Bar.Repository.create({
+    name: 'eiei',
+    foo: [12, 69]
+})
 ```
 
 ### Example
@@ -58,40 +60,3 @@ export default async function getUser() {
   return VehicleRepository.find(filter, options)
 }
 ```
-
-### mongoose-repository
-
-```javascript
-// Bar.js
-import repositoryBuilder from '@spksoft/mongoose-repository/repositoryBuilder'
-
-const schemaDefinition = {
-  name: {
-    type: String,
-    require: true
-  },
-  foo: {
-    type: [Number],
-    require: true
-  }
-}
-
-export default repositoryBuilder('Bar', schemaDefinition, 'Barzs')
-//  {
-//      Model,
-//      Schema,
-//      Repository,
-//      schemaDefinition,
-//      default: Repository
-//  }
-```
-
-```javascript
-import Bar from './Bar.js'
-
-Bar.Repository.create({
-    name: 'eiei',
-    foo: [12, 69]
-})
-```
-
