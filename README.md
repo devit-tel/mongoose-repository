@@ -7,13 +7,13 @@ Include Plugin:
 
 ### install
 ```
-npm install @spksoft/mongoose-repository
+npm install sendit-mongoose-repository
 ```
 
 ### Usage
 user.repository.js file
 ```javascript
-import RepositoryBuilder from '@spksoft/mongoose-repository'
+import RepositoryBuilder from 'sendit-mongoose-repository'
 
 const schemaDefinition = {
   name: {
