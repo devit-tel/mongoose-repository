@@ -1,8 +1,8 @@
-import * as mongoose from 'mongoose'
+import mongoose from 'mongoose'
 import MongooseBaseRepository from '../baseRepository/index'
-import * as mongoosePaginate from 'mongoose-paginate'
-import * as mongooseTimestamps from 'mongoose-timestamp'
-import * as mongooseDelete from 'mongoose-delete'
+import mongoosePaginate from 'mongoose-paginate'
+import mongooseTimestamps from 'mongoose-timestamp'
+import mongooseDelete from 'mongoose-delete'
 
 export default (modelName: string, schemaDefinition: any) => {
   const Schema = new mongoose.Schema(schemaDefinition)
