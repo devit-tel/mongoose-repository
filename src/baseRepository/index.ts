@@ -13,7 +13,7 @@ class BaseRepository {
       return this.model.findOne(query, option);
     }
   }
-  public async find(query: any = {}, options: any): Promise<any> {
+  public async find(query: any = {}, options: any = {}): Promise<any> {
 
     let page = {
       data: [],
@@ -38,11 +38,9 @@ class BaseRepository {
         options = JSON.parse(options)
       }
       // options = {sort: '{"name": 1}"'}
-      Object.keys(options).map(key => {
-        if (typeof options[key] === "string") {
-          options[key] = JSON.parse(options[key])
-        }
-      })
+      if (typeof options.sort === 'string') {
+        options.sort = JSON.parse(options.sort)
+      }
     }
 
     if (
