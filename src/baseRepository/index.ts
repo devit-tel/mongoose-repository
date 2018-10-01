@@ -14,6 +14,7 @@ class BaseRepository {
     }
   }
   public async find(query: any = {}, options: any): Promise<any> {
+
     let page = {
       data: [],
       total: 0,
@@ -22,11 +23,26 @@ class BaseRepository {
       hasNext: false
     };
     if (query) {
+      if (typeof query === 'string') {
+        query = JSON.parse(query)
+      }
+      // query = {name: 'd,dd,ddd'} => {name: ['d, 'dd', 'ddd']
       Object.keys(query).map(key => {
         if (typeof query[key] === "string") {
           query[key] = query[key].split(",");
         }
-      });
+      })
+    }
+    if (options) {
+      if (typeof options === 'string') {
+        options = JSON.parse(options)
+      }
+      // options = {sort: '{"name": 1}"'}
+      Object.keys(options).map(key => {
+        if (typeof options[key] === "string") {
+          options[key] = JSON.parse(options[key])
+        }
+      })
     }
 
     if (

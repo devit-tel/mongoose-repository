@@ -18,6 +18,7 @@ export default (modelName: string, schemaDefinition: any) => {
     Repository,
     Model,
     Schema,
-    schemaDefinition
+    SchemaDefinition: schemaDefinition,
+    Mongoose: mongoose
   }
 }
