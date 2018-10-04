@@ -8,6 +8,9 @@ class BaseRepository {
     let populate = option.populate;
     delete option.populate;
     if (populate && populate !== undefined && populate !== "") {
+      if (typeof populate === 'string') {
+        populate = JSON.parse(populate)
+      }
       return this.model.findOne(query, option).populate(populate);
     } else {
       return this.model.findOne(query, option);
@@ -40,6 +43,10 @@ class BaseRepository {
       // options = {sort: '{"name": 1}"'}
       if (typeof options.sort === 'string') {
         options.sort = JSON.parse(options.sort)
+      }
+
+      if (typeof options.populate === 'string') {
+        options.populate = JSON.parse(options.populate)
       }
     }
 
