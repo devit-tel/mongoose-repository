@@ -1,6 +1,6 @@
 {
   "name": "sendit-mongoose-repository",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "A mongoose Repository based",
   "main": "./distribution/index.js",
   "types": "./distribution/index.d.ts",
@@ -37,9 +37,12 @@
     "typescript": "^3.0.3"
   },
   "dependencies": {
+    "install": "^0.12.2",
     "mongoose-delete": "^0.4.0",
+    "mongoose-history": "^0.6.0",
     "mongoose-paginate": "^5.0.3",
-    "mongoose-timestamp": "^0.6.0"
+    "mongoose-timestamp": "^0.6.0",
+    "npm": "^6.4.1"
   },
   "peerDependencies": {
     "mongoose": "^5.2.17"
