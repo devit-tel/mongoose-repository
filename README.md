@@ -4,7 +4,6 @@ Include Plugin:
 - mongoose-delete (default options: { deletedAt: true, indexFields: true, overrideMethods: true })
 - mongoose-timestamps
 - mongoose-paginate
-- mongoose-history
 
 ### install
 ```
