@@ -3,6 +3,7 @@ import MongooseBaseRepository from '../baseRepository/index'
 import * as mongoosePaginate from 'mongoose-paginate'
 import * as mongooseTimestamps from 'mongoose-timestamp'
 import * as mongooseDelete from 'mongoose-delete'
+import * as mongooseAggregatePaginate from 'mongoose-aggregate-paginate'
 
 interface SchemaPlugin {
   plugin: any,
@@ -26,6 +27,7 @@ export default (modelName: string, schemaDefinition: any, schemaConfig: SchemaCo
   Schema.plugin(mongooseDelete, { deletedAt: true, indexFields: true, overrideMethods: true })
   Schema.plugin(mongooseTimestamps)
   Schema.plugin(mongoosePaginate)
+  Schema.plugin(mongooseAggregatePaginate)
   if(Array.isArray(schemaConfig.plugins)) {
     schemaConfig.plugins.map(({ plugin, options }) => Schema.plugin(plugin, options))
   }
