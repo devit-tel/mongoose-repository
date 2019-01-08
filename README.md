@@ -97,7 +97,7 @@ var options = {
   page: 1, // required, start 1
   sort: {name: -1}, // optional, default: {_id: 1}, (ex. sort descending name)
   populate: 'company', // optional
-  // select: 'name foos' // '{{fieldname}} {{fieldname}}' or {name: 1, foos: -1}
+  select: '-_id -__v -password' // optional omit _id, __v, password  
 }
 return BarRepository.find(filter, options)
 ```
