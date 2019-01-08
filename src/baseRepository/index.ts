@@ -21,10 +21,11 @@ class BaseRepository {
     let page = {
       data: [],
       total: 0,
-      limit: options.limit || 0,
-      page: options.page || 1,
+      limit: +options.limit || 10,
+      page: +options.page || 1,
       hasNext: false
-    };
+    }
+
     if (query) {
       if (typeof query === 'string') {
         query = JSON.parse(query)
@@ -37,14 +38,10 @@ class BaseRepository {
       })
     }
     if (options) {
-      if (typeof options === 'string') {
-        options = JSON.parse(options)
-      }
       // options = {sort: '{"name": 1}"'}
       if (typeof options.sort === 'string') {
         options.sort = JSON.parse(options.sort)
       }
-
       if (typeof options.populate === 'string') {
         options.populate = JSON.parse(options.populate)
       }
@@ -65,21 +62,23 @@ class BaseRepository {
           limit: +options.limit,
           page: +options.page,
           sort: options.sort,
-          populate: options.populate
-        });
+          populate: options.populate,
+          select: options.select
+        })
       } else {
         result = await this.model.paginate(query, {
           limit: +options.limit,
           page: +options.page,
-          sort: options.sort
-        });
+          sort: options.sort,
+          select: options.select
+        })
       }
       page.data = result.docs;
       page.total = result.total;
       page.limit = result.limit;
       page.page = result.page;
-      page.hasNext = result.page * result.limit < result.total;
-      return page;
+      page.hasNext = result.page * result.limit < result.total
+      return page
     } else {
       let result = null;
       if (
@@ -87,13 +86,13 @@ class BaseRepository {
         options.populate !== undefined &&
         options.populate !== ""
       ) {
-        result = await this.model.find(query).populate(options.populate);
+        result = await this.model.find(query).populate(options.populate)
       } else {
-        result = await this.model.find(query);
+        result = await this.model.find(query)
       }
-      page.data = result;
-      page.total = result.length;
-      return page;
+      page.data = result
+      page.total = result.length
+      return page
     }
   }
   public async create(data: any): Promise<any> {
@@ -112,6 +111,48 @@ class BaseRepository {
     return this.model.delete
       ? this.model.delete(data)
       : this.model.remove(data);
+  }
+  public async aggregate(aggregate: any): Promise<any> {
+    return this.model.aggregate(aggregate)
+  }
+  public async aggregatePaginate(query: any = {}, options: any = {}): Promise<any> {
+    let page = {
+      data: [],
+      total: 0,
+      limit: +options.limit || 10,
+      page: +options.page || 1,
+      hasNext: false
+    }
+    if (query) {
+      if (typeof query === 'string') {
+        query = JSON.parse(query)
+      }
+      // query = {name: 'd,dd,ddd'} => {name: ['d, 'dd', 'ddd']
+      Object.keys(query).map(key => {
+        if (typeof query[key] === "string") {
+          query[key] = query[key].split(",");
+        }
+      })
+    }
+    if (options) {
+      // options = {sort: '{"name": 1}"'}
+      if (typeof options.sort === 'string') {
+        options.sort = JSON.parse(options.sort)
+      }
+      if (typeof options.populate === 'string') {
+        options.populate = JSON.parse(options.populate)
+      }
+    }
+    const aggregate = this.model.aggregate(query)
+    const result = await this.model.aggregatePaginate(aggregate, {
+      limit: page.limit,
+      page: page.page,
+      sortBy: options.sort || undefined,
+    })
+    page.data = result.data;
+    page.total = result.totalCount;
+    page.hasNext = page.page * page.limit < result.totalCount;
+    return page
   }
 }
 

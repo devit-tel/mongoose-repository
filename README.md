@@ -1,18 +1,22 @@
 # mongoose-repository
 A mongoose Repository based
 Include Plugin:
+- mongoose
 - mongoose-delete (default options: { deletedAt: true, indexFields: true, overrideMethods: true })
-- mongoose-timestamps
+- mongoose-history
 - mongoose-paginate
+- mongoose-timestamp
+- mongoose-aggregate-paginate
 
 ### install
 ```
-npm install sendit-mongoose-repository
+npm install sendit-mongoose-repository --save
 ```
 
-### Usage
-user.repository.js file
+## Create repo Example
+bar.repository.js file
 ```javascript
+import mongoose from 'mongoose'
 import RepositoryBuilder from 'sendit-mongoose-repository'
 
 const schemaDefinition = {
@@ -20,73 +24,125 @@ const schemaDefinition = {
     type: String,
     require: true
   },
-  foo: {
+  foos: {
     type: [Number],
     require: true
-  }
+  },
+  company: { type: Mongoose.Schema.Types.ObjectId, ref: 'Company' },
 }
 
-export default RepositoryBuilder('Bar', schemaDefinition)
+export const builder = RepositoryBuilder('Bar', schemaDefinition)
+export default builder.Repository
+// builder provides:
 //  {
 //      Model,
 //      Schema,
 //      Repository,
-//      schemaDefinition,
-//      default: Repository
+//      schemaDefinition
 //  }
 ```
 
-### Example
-find with repository
+## BaseRepostory provides functions
 ```javascript
-import UserRepository from './user.repository.js'
+.findOne(query: any, options: any)
+.find(query: any = {}, options: any = {})
+.create(data: any)
+.update(query: any, data: any)
+.upsert(query: any, data: any)
+  (default options: {upsert: true, new: true})
+.delete(data: any)
+.aggregate(data: any)
+.aggregatePaginate(query: any, options)
 
-export default async function getUser() {
+```
+
+
+## Usage Example
+Find one
+```javascript
+import BarRepository from './bar.repository.js'
+export default async function list() {
   var filter = {
-    name: 'Yana'
+    name: 'default'
   }
   var options = {
-    limit: 10, // limit data 10 rows
-    page: 1, // start 1
-    sort: 'username -password', // sort by "username" ascending and "password" descending
-    populate: 'userType'
+    populate: 'company' //optional
   }
-  return UserRepository.find(filter, options)
+  return BarRepository.findOne(filter, options)
 }
 ```
 
-find with model
+Find all
 ```javascript
-import UserRepository from './user.repository.js'
+import BarRepository from './bar.repository.js'
 
-export default async function getUser() {
+export default async function list() {
   var filter = {
-    name: 'Yana'
+    name: 'default'
   }
   var options = {
-    limit: 10, // limit data 10 rows
-    page: 1, // start 1
-    sort: 'username -password', // sort by "username" ascending and "password" descending
-    populate: 'userType'
+    populate: 'company' //optional
   }
-  return UserRepository.Model.find(filter, options)
+  return BarRepository.find(filter, options)
+}
+```
+Find with Paginate (required options.limit and options.page)
+
+```javascript
+var filter = {
+  name: 'default'
+}
+var options = {
+  limit: 10, // required
+  page: 1, // required, start 1
+  sort: {name: -1}, // optional, default: {_id: 1}, (ex. sort descending name)
+  populate: 'company', // optional
+  // select: 'name foos' // '{{fieldname}} {{fieldname}}' or {name: 1, foos: -1}
+}
+return BarRepository.find(filter, options)
+```
+
+Create
+```javascript
+await BarRepository.create({ name: 'default' })
+```
+
+Update
+```javascript
+await BarRepository.update({ name: 'default' }, { foos: [12, 69] })
+```
+
+Delete
+```javascript
+await BarRepository.delete({ name: 'default' })
+```
+
+Aggregate
+```javascript
+import BarRepository from './bar.repository.js'
+
+export default async function list() {
+  var filter = {
+    name: 'default'
+  }
+  var options = {
+    populate: 'company' //optional
+  }
+  return BarRepository.find(filter, options)
 }
 ```
 
-get schema definition
-```javascript
-import UserRepository from './user.repository.js'
+Aggregate Paginate
 
-export default async function getUserSchemaDefinition() {
-  return UserRepository.schemaDefinition
+```javascript
+var aggregateQuery = [
+  { $match : { name: 'default' } },
+  { $project: { foos: 1 } }
+]
+var options = {
+  limit: 10, // required
+  page: 1, // required, start 1
+  sort: {name: -1}
 }
-```
-
-create
-```javascript
-import UserRepository from './user.repository'
-UserRepository.create({
-    name: 'eiei',
-    foo: [12, 69]
-})
+return BarRepository.aggregatePaginate(filter, options)
 ```
