@@ -98,6 +98,9 @@ class BaseRepository {
   public async create(data: any): Promise<any> {
     return this.model.create(data);
   }
+  public async insertMany(data: any): Promise<any> {
+    return this.model.insertMany(data);
+  }
   public async update(query: any, data: any): Promise<any> {
     return this.model.findOneAndUpdate(query, data, { new: true });
   }
