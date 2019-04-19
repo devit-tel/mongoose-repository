@@ -1,3 +1,10 @@
+import { Broker } from '../amqp'
+
+declare var process: {
+  env: {
+    AMQP_SERVICE: string,
+  }
+}
 class BaseRepository {
   model: any = undefined;
   constructor(mongooseModel: any) {
@@ -95,14 +102,37 @@ class BaseRepository {
       return page
     }
   }
-  public async create(data: any): Promise<any> {
-    return this.model.create(data);
+  public async create(data: any, options: any): Promise<any> {
+    let option = { ...options };
+    let queue = option.queue;
+    let result = await this.model.create(data);
+    if (queue && queue === true) {
+      Broker.publish(`${process.env.AMQP_SERVICE}.CREATE`, result, (err: any, publication: any) => {
+        if (err) console.log('Rascal Error')
+        publication.on('success', (messageId: any) => {
+          console.log('success and messageId is', messageId)
+        })
+      })
+    }
+
+    return result
   }
   public async insertMany(data: any): Promise<any> {
     return this.model.insertMany(data);
   }
-  public async update(query: any, data: any): Promise<any> {
-    return this.model.findOneAndUpdate(query, data, { new: true });
+  public async update(query: any, data: any, options: any): Promise<any> {
+    let option = { ...options };
+    let queue = option.queue;
+    let result = this.model.findOneAndUpdate(query, data, { new: true });
+    if (queue && queue === true) {
+      Broker.publish(`${process.env.AMQP_SERVICE}.UPDATE`, result, (err: any, publication: any) => {
+        // if (err) console.log('Rascal Error')
+        publication.on('success', (messageId: any) => {
+          console.log('success and messageId is', messageId)
+        })
+      })
+    }
+    return result
   }
   public async upsert(query: any, data: any): Promise<any> {
     return this.model.findOneAndUpdate(query, data, {

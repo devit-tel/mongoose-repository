@@ -4,6 +4,9 @@ import * as mongoosePaginate from 'mongoose-paginate'
 import * as mongooseTimestamps from 'mongoose-timestamp'
 import * as mongooseDelete from 'mongoose-delete'
 import * as mongooseAggregatePaginate from 'mongoose-aggregate-paginate'
+import { init } from '../amqp'
+
+init()
 
 interface SchemaPlugin {
   plugin: any,
@@ -44,6 +47,6 @@ export default (modelName: string, schemaDefinition: any, schemaConfig: SchemaCo
     Model,
     Schema,
     SchemaDefinition: schemaDefinition,
-    Mongoose: mongoose
+    Mongoose: mongoose,
   }
 }
