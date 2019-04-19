@@ -126,7 +126,7 @@ class BaseRepository {
     let result = this.model.findOneAndUpdate(query, data, { new: true });
     if (queue && queue === true) {
       Broker.publish(`${process.env.AMQP_SERVICE}.UPDATE`, result, (err: any, publication: any) => {
-        // if (err) console.log('Rascal Error')
+        if (err) console.log('Rascal Error')
         publication.on('success', (messageId: any) => {
           console.log('success and messageId is', messageId)
         })
