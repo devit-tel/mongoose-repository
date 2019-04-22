@@ -6,7 +6,14 @@ import * as mongooseDelete from 'mongoose-delete'
 import * as mongooseAggregatePaginate from 'mongoose-aggregate-paginate'
 import { init } from '../amqp'
 
-init()
+declare var process: {
+  env: {
+    ENABLE_AMQP: boolean
+  }
+}
+
+process.env.ENABLE_AMQP ? init() : null
+
 interface SchemaPlugin {
   plugin: any,
   options: any
