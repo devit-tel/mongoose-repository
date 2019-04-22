@@ -100,19 +100,19 @@ class BaseRepository {
   public async create(data: any): Promise<any> {
     let result: any
     result = await this.model.create(data)
-    amqpPublish(this.model.modelName, 'create', result)
+    amqpPublish('create', { model: this.model.modelName, result })
 
     return result
   }
   public async insertMany(data: any): Promise<any> {
     let result = this.model.insertMany(data);
-    amqpPublish(this.model.modelName, 'create', result)
+    amqpPublish('create', { model: this.model.modelName, result })
 
     return result
   }
   public async update(query: any, data: any): Promise<any> {
     let result = this.model.findOneAndUpdate(query, data, { new: true });
-    amqpPublish(this.model.modelName, 'update', result)
+    amqpPublish('update', { model: this.model.modelName, result })
 
     return result
   }

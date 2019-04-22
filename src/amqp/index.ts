@@ -94,9 +94,9 @@ export async function init(config: any) {
   })
 }
 
-export function amqpPublish(model: any, query: string, result: any) {
+export function amqpPublish(query: string, result: any) {
   try {
-    Broker.publish(`${routingKey}.${model}.${query}`, result, (err: any, publication: any) => {
+    Broker.publish(`${routingKey}.${query}`, result, (err: any, publication: any) => {
       if (err) console.error('AMQP can not publish')
       publication.on('success', (messageId: any) => {
         console.log('success and messageId is', messageId)

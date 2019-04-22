@@ -4,15 +4,16 @@ import * as mongoosePaginate from 'mongoose-paginate'
 import * as mongooseTimestamps from 'mongoose-timestamp'
 import * as mongooseDelete from 'mongoose-delete'
 import * as mongooseAggregatePaginate from 'mongoose-aggregate-paginate'
+
 import { init } from '../amqp'
 
 declare var process: {
   env: {
-    MONGOOSE_ENABLE_AMQP: string
+    MONGOOSE_ENABLE_AMQP: string,
   }
 }
 
-process.env.MONGOOSE_ENABLE_AMQP && process.env.MONGOOSE_ENABLE_AMQP==='true' ? init(null) : null
+process.env.MONGOOSE_ENABLE_AMQP && process.env.MONGOOSE_ENABLE_AMQP === 'true' ? init(null) : null
 
 interface SchemaPlugin {
   plugin: any,
@@ -21,7 +22,7 @@ interface SchemaPlugin {
 
 interface SchemaIndexs {
   fields: {
-    [key: string] : number
+    [key: string]: number
   },
   options: any
 }
@@ -37,10 +38,10 @@ export default (modelName: string, schemaDefinition: any, schemaConfig: SchemaCo
   Schema.plugin(mongooseTimestamps)
   Schema.plugin(mongoosePaginate)
   Schema.plugin(mongooseAggregatePaginate)
-  if(Array.isArray(schemaConfig.plugins)) {
+  if (Array.isArray(schemaConfig.plugins)) {
     schemaConfig.plugins.map(({ plugin, options }) => Schema.plugin(plugin, options))
   }
-  if(Array.isArray(schemaConfig.indexs)) {
+  if (Array.isArray(schemaConfig.indexs)) {
     schemaConfig.indexs.map(({ fields, options }) => Schema.index(fields, options))
   }
 
