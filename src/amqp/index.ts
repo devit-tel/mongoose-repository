@@ -3,20 +3,20 @@ import * as Rascal from 'rascal'
 declare var process: {
   env: {
     NODE_ENV: string,
-    AMQP_URI: string,
-    AMQP_USERNAME: string,
-    AMQP_PASSWORD: string,
-    AMQP_PORT: number,
-    AMQP_SERVICE: string,
+    MONGOOSE_AMQP_URI: string,
+    MONGOOSE_AMQP_USERNAME: string,
+    MONGOOSE_AMQP_PASSWORD: string,
+    MONGOOSE_AMQP_PORT: number,
+    MONGOOSE_AMQP_SERVICE: string,
   }
 }
 
-const routingKey = process.env.AMQP_SERVICE
+const routingKey = process.env.MONGOOSE_AMQP_SERVICE
 const queueNameCreate = `${process.env.NODE_ENV}.${routingKey}.create`
 const queueNameUpdate = `${process.env.NODE_ENV}.${routingKey}.update`
 const exchangeName = `${process.env.NODE_ENV}.mongoose-repository.caller`
 const isProduction = process.env.NODE_ENV === 'production'
-const amqpUrl = process.env.AMQP_URI ? process.env.AMQP_URI.split(',') : null
+const amqpUrl = process.env.MONGOOSE_AMQP_URI ? process.env.MONGOOSE_AMQP_URI.split(',') : null
 
 let configHost = {}
 if (isProduction) {
@@ -29,10 +29,10 @@ if (isProduction) {
       slashes: true,
       protocol: 'amqp',
       hostname: amqpUrl ? amqpUrl[0] : null,
-      user: process.env.AMQP_USERNAME,
-      password: process.env.AMQP_PASSWORD,
+      user: process.env.MONGOOSE_AMQP_USERNAME,
+      password: process.env.MONGOOSE_AMQP_PASSWORD,
       vhost: `//${process.env.NODE_ENV}`,
-      port: process.env.AMQP_PORT,
+      port: process.env.MONGOOSE_AMQP_PORT,
       options: {
         heartbeat: 5
       },
@@ -83,7 +83,7 @@ export async function init() {
 
 export function amqpPublish(query: string, result: any) {
   try {
-    Broker.publish(`${process.env.AMQP_SERVICE}.${query}`, result, (err: any, publication: any) => {
+    Broker.publish(`${process.env.MONGOOSE_AMQP_SERVICE}.${query}`, result, (err: any, publication: any) => {
       if (err) console.error('AMQP can not publish')
       publication.on('success', (messageId: any) => {
         console.log('success and messageId is', messageId)

@@ -8,11 +8,11 @@ import { init } from '../amqp'
 
 declare var process: {
   env: {
-    ENABLE_AMQP: boolean
+    MONGOOSE_ENABLE_AMQP: boolean
   }
 }
 
-process.env.ENABLE_AMQP ? init() : null
+process.env.MONGOOSE_ENABLE_AMQP ? init() : null
 
 interface SchemaPlugin {
   plugin: any,
