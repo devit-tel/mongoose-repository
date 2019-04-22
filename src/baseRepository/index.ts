@@ -1,10 +1,10 @@
-import { Broker } from '../amqp'
+import { amqpPublish } from '../amqp'
 
-declare var process: {
-  env: {
-    AMQP_SERVICE: string,
-  }
-}
+// declare var process: {
+//   env: {
+//     AMQP_SERVICE: string,
+//   }
+// }
 class BaseRepository {
   model: any = undefined;
   constructor(mongooseModel: any) {
@@ -102,36 +102,23 @@ class BaseRepository {
       return page
     }
   }
-  public async create(data: any, options: any): Promise<any> {
-    let option = { ...options };
-    let queue = option.queue;
-    let result = await this.model.create(data);
-    if (queue && queue === true) {
-      Broker.publish(`${process.env.AMQP_SERVICE}.CREATE`, result, (err: any, publication: any) => {
-        if (err) console.log('Rascal Error')
-        publication.on('success', (messageId: any) => {
-          console.log('success and messageId is', messageId)
-        })
-      })
-    }
+  public async create(data: any): Promise<any> {
+    let result: any
+    result = await this.model.create(data)
+    amqpPublish('create', result)
 
     return result
   }
   public async insertMany(data: any): Promise<any> {
-    return this.model.insertMany(data);
+    let result = this.model.insertMany(data);
+    amqpPublish('create', result)
+
+    return result
   }
-  public async update(query: any, data: any, options: any): Promise<any> {
-    let option = { ...options };
-    let queue = option.queue;
+  public async update(query: any, data: any): Promise<any> {
     let result = this.model.findOneAndUpdate(query, data, { new: true });
-    if (queue && queue === true) {
-      Broker.publish(`${process.env.AMQP_SERVICE}.UPDATE`, result, (err: any, publication: any) => {
-        if (err) console.log('Rascal Error')
-        publication.on('success', (messageId: any) => {
-          console.log('success and messageId is', messageId)
-        })
-      })
-    }
+    amqpPublish('update', result)
+
     return result
   }
   public async upsert(query: any, data: any): Promise<any> {

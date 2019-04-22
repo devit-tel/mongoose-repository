@@ -1,6 +1,6 @@
-import Rascal from 'rascal'
+import * as Rascal from 'rascal'
 
-declare var process : {
+declare var process: {
   env: {
     NODE_ENV: string,
     AMQP_URI: string,
@@ -15,8 +15,8 @@ declare var process : {
 }
 
 const routingKey = process.env.AMQP_SERVICE
-const queueNameCreate = `${process.env.NODE_ENV}.${routingKey}.CREATE`
-const queueNameUpdate = `${process.env.NODE_ENV}.${routingKey}.UPDATE`
+const queueNameCreate = `${process.env.NODE_ENV}.${routingKey}.create`
+const queueNameUpdate = `${process.env.NODE_ENV}.${routingKey}.update`
 const exchangeName = `${process.env.NODE_ENV}.mongoose-repository.caller`
 const isProduction = process.env.NODE_ENV === 'production'
 
@@ -58,17 +58,17 @@ const configRascal = {
         [queueNameUpdate]: { options: { durable: true } },
       },
       bindings: [
-        `${exchangeName}[${routingKey}.CREATE] -> ${queueNameCreate}`,
-        `${exchangeName}[${routingKey}.UPDATE] -> ${queueNameUpdate}`,
+        `${exchangeName}[${routingKey}.create] -> ${queueNameCreate}`,
+        `${exchangeName}[${routingKey}.update] -> ${queueNameUpdate}`,
       ],
       publications: {
-        [`${routingKey}.CREATE`]: {
+        [`${routingKey}.create`]: {
           'exchange': [exchangeName],
-          'routingKey': `${routingKey}.CREATE`
+          'routingKey': `${routingKey}.create`
         },
-        [`${routingKey}.UPDATE`]: {
+        [`${routingKey}.update`]: {
           'exchange': [exchangeName],
-          'routingKey': `${routingKey}.UPDATE`
+          'routingKey': `${routingKey}.update`
         }
       }
     }
@@ -79,10 +79,24 @@ export let Broker: any
 export async function init() {
   Rascal.Broker.create(Rascal.withDefaultConfig(configRascal), (err: any, broker: any) => {
     if (err) {
-      console.log(err)
-      // throw err
+      console.error('###### connect AMQP failed ######')
+    } else {
+      console.log('###### connect AMQP success ######')
     }
-    console.log('###### connect AMQP success ######')
     Broker = broker
   })
+}
+
+export function amqpPublish(query: string, result: any) {
+  try {
+    Broker.publish(`${process.env.AMQP_SERVICE}.${query}`, result, (err: any, publication: any) => {
+      if (err) console.error('AMQP can not publish')
+      publication.on('success', (messageId: any) => {
+        console.log('success and messageId is', messageId)
+      })
+    })
+  } catch (error) {
+    console.error('AMQP can not publish')
+  }
+  return
 }

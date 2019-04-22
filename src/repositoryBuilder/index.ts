@@ -7,7 +7,6 @@ import * as mongooseAggregatePaginate from 'mongoose-aggregate-paginate'
 import { init } from '../amqp'
 
 init()
-
 interface SchemaPlugin {
   plugin: any,
   options: any
