@@ -146,3 +146,65 @@ var options = {
 }
 return BarRepository.aggregatePaginate(filter, options)
 ```
+
+## AMQP
+
+Publish queue after create or update <br/>
+
+add these variable in .env
+```javascript
+NODE_ENV
+MONGOOSE_ENABLE_AMQP //true of false
+MONGOOSE_AMQP_URI
+MONGOOSE_AMQP_USERNAME
+MONGOOSE_AMQP_PASSWORD
+MONGOOSE_AMQP_PORT
+MONGOOSE_AMQP_SERVICE //amqp service name
+```
+
+Example For cluster connections
+```
+MONGOOSE_AMQP_URI=amqp://guest:guest@example1.com:5672/v1?heartbeat=10,
+amqp://guest:guest@example2.com:5672/v1?heartbeat=10,
+amqp://guest:guest@example3.com:5672/v1?heartbeat=10
+```
+
+pattern queue name
+```
+NODE_ENV.MONGOOSE_AMQP_SERVICE.model.create
+NODE_ENV.MONGOOSE_AMQP_SERVICE.model.update
+```
+
+example
+```
+staging.fleet.vehicles.create
+```
+
+or
+
+```javascript
+import { init } from 'sendit-mongoose-repository'
+
+init({
+  service: 'myservice',
+  exchange: `exchange-service-caller`,
+  queueNameCreate: `${process.env.NODE_ENV}.${process.env.MONGOOSE_AMQP_SERVICE}.model.create`,
+  queueNameUpdate: `${process.env.NODE_ENV}.${process.env.MONGOOSE_AMQP_SERVICE}.model.update`,
+  vhosts: process.env.NODE_ENV,
+  connection: {
+    slashes: true,
+    protocol: 'amqp',
+    hostname: process.env.MONGOOSE_AMQP_URI,
+    user: process.env.MONGOOSE_AMQP_USERNAME,
+    password: process.env.MONGOOSE_AMQP_PASSWORD,
+    vhost: `//${process.env.NODE_ENV}`,
+    port: process.env.MONGOOSE_AMQP_PORT,
+    options: {
+      heartbeat: 5,
+    },
+    socketOptions: {
+      timeout: 1000,
+    },
+  },
+})
+```

@@ -1,10 +1,5 @@
 import { amqpPublish } from '../amqp'
 
-declare var process: {
-  env: {
-    MONGOOSE_ENABLE_AMQP: string
-  }
-}
 class BaseRepository {
   model: any = undefined;
   constructor(mongooseModel: any) {
@@ -105,20 +100,19 @@ class BaseRepository {
   public async create(data: any): Promise<any> {
     let result: any
     result = await this.model.create(data)
-
-    if (process.env.MONGOOSE_ENABLE_AMQP && process.env.MONGOOSE_ENABLE_AMQP==='true') amqpPublish('create', result)
+    amqpPublish(this.model.modelName, 'create', result)
 
     return result
   }
   public async insertMany(data: any): Promise<any> {
     let result = this.model.insertMany(data);
-    if (process.env.MONGOOSE_ENABLE_AMQP && process.env.MONGOOSE_ENABLE_AMQP==='true') amqpPublish('create', result)
+    amqpPublish(this.model.modelName, 'create', result)
 
     return result
   }
   public async update(query: any, data: any): Promise<any> {
     let result = this.model.findOneAndUpdate(query, data, { new: true });
-    if (process.env.MONGOOSE_ENABLE_AMQP && process.env.MONGOOSE_ENABLE_AMQP==='true') amqpPublish('update', result)
+    amqpPublish(this.model.modelName, 'update', result)
 
     return result
   }

@@ -12,7 +12,7 @@ declare var process: {
   }
 }
 
-process.env.MONGOOSE_ENABLE_AMQP && process.env.MONGOOSE_ENABLE_AMQP==='true' ? init() : null
+process.env.MONGOOSE_ENABLE_AMQP && process.env.MONGOOSE_ENABLE_AMQP==='true' ? init(null) : null
 
 interface SchemaPlugin {
   plugin: any,
