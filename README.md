@@ -7,6 +7,7 @@ Include Plugin:
 - mongoose-paginate
 - mongoose-timestamp
 - mongoose-aggregate-paginate
+- rascal
 
 ### install
 ```
@@ -145,4 +146,55 @@ var options = {
   sort: {name: -1}
 }
 return BarRepository.aggregatePaginate(filter, options)
+```
+
+## AMQP
+
+Publish queue after create or update by default exchange <br/>
+
+pattern queue name
+```
+node_env.serviceName.create.model
+node_env.serviceName.update.model
+```
+
+example
+```
+local.fleet.create.vehicles
+```
+
+or
+
+```javascript
+import { init } from 'sendit-mongoose-repository'
+
+init({
+  service: 'myservice',
+  vhosts: 'local',
+  connection: {
+    slashes: true,
+    protocol: 'amqp',
+    hostname: '127.0.0.1',
+    user: 'guest',
+    password: 'guest',
+    vhost: `//local`,
+    port: 5672,
+    options: {
+      heartbeat: 5,
+    },
+    socketOptions: {
+      timeout: 1000,
+    },
+  },
+})
+```
+
+Example For cluster connections
+
+```javascript
+connections: [
+        "amqp://guest:guest@example1.com:5672/v1?heartbeat=10",
+        "amqp://guest:guest@example2.com:5672/v1?heartbeat=10",
+        "amqp://guest:guest@example3.com:5672/v1?heartbeat=10"
+      ]
 ```

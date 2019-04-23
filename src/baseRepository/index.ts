@@ -1,3 +1,5 @@
+import { amqpPublish } from '../amqp'
+
 class BaseRepository {
   model: any = undefined;
   constructor(mongooseModel: any) {
@@ -96,13 +98,23 @@ class BaseRepository {
     }
   }
   public async create(data: any): Promise<any> {
-    return this.model.create(data);
+    let result: any
+    result = await this.model.create(data)
+    amqpPublish('create', result, this.model.modelName)
+
+    return result
   }
   public async insertMany(data: any): Promise<any> {
-    return this.model.insertMany(data);
+    let result = this.model.insertMany(data);
+    amqpPublish('create', result, this.model.modelName)
+
+    return result
   }
   public async update(query: any, data: any): Promise<any> {
-    return this.model.findOneAndUpdate(query, data, { new: true });
+    let result = this.model.findOneAndUpdate(query, data, { new: true });
+    amqpPublish('update', result, this.model.modelName)
+
+    return result
   }
   public async upsert(query: any, data: any): Promise<any> {
     return this.model.findOneAndUpdate(query, data, {
