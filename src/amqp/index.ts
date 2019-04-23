@@ -12,9 +12,6 @@ declare var process: {
 }
 let env = process.env.NODE_ENV
 let routingKey = process.env.MONGOOSE_AMQP_SERVICE
-let queueNameCreate = `${env}.${routingKey}.create`
-let queueNameUpdate = `${env}.${routingKey}.update`
-let exchangeName = `${env}.mongoose-repository.caller`
 let isProduction = env === 'production'
 let amqpUrl = process.env.MONGOOSE_AMQP_URI ? process.env.MONGOOSE_AMQP_URI.split(',') : null
 
@@ -48,13 +45,8 @@ export async function init(config: any) {
   if (config) {
     env = config.vhosts
     routingKey = config.service
-    exchangeName = config.exchange
-    queueNameCreate = config.queueNameCreate
-    queueNameUpdate = config.queueNameUpdate
     delete config.service
-    delete config.queueNameCreate
     delete config.exchange
-    delete config.queueNameUpdate
     delete config.vhosts
     configHost = { ...config }
   }
@@ -62,23 +54,11 @@ export async function init(config: any) {
     vhosts: {
       [`${env}`]: {
         ...configHost,
-        exchanges: [exchangeName],
-        queues: {
-          [queueNameCreate]: { options: { durable: true } },
-          [queueNameUpdate]: { options: { durable: true } },
-        },
-        bindings: [
-          `${exchangeName}[${routingKey}.create] -> ${queueNameCreate}`,
-          `${exchangeName}[${routingKey}.update] -> ${queueNameUpdate}`,
-        ],
+        exchanges: [""],
+        queues: {},
         publications: {
-          [`${routingKey}.create`]: {
-            'exchange': [exchangeName],
-            'routingKey': `${routingKey}.create`
-          },
-          [`${routingKey}.update`]: {
-            'exchange': [exchangeName],
-            'routingKey': `${routingKey}.update`
+          "default_exchange": {
+            'exchange': [""],
           }
         }
       }
@@ -94,15 +74,17 @@ export async function init(config: any) {
   })
 }
 
-export function amqpPublish(query: string, result: any) {
+export function amqpPublish(query: string, result: any, model: any) {
   try {
-    Broker.publish(`${routingKey}.${query}`, result, (err: any, publication: any) => {
-      if (err) console.error('AMQP can not publish')
+    Broker.publish('default_exchange', result, `${env}.${routingKey}.${query}.${model}`, (err: any, publication: any) => {
+      console.log(`Publish to ${env}.${routingKey}.${query}.${model}`)
+      if (err) console.error('AMQP can not publish', err)
       publication.on('success', (messageId: any) => {
         console.log('success and messageId is', messageId)
       })
     })
   } catch (error) {
+    console.log('catch: ', error)
   }
   return
 }

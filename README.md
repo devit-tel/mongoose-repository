@@ -7,6 +7,7 @@ Include Plugin:
 - mongoose-paginate
 - mongoose-timestamp
 - mongoose-aggregate-paginate
+- rascal
 
 ### install
 ```
@@ -149,35 +150,17 @@ return BarRepository.aggregatePaginate(filter, options)
 
 ## AMQP
 
-Publish queue after create or update <br/>
-
-add these variable in .env
-```javascript
-NODE_ENV
-MONGOOSE_ENABLE_AMQP //true of false
-MONGOOSE_AMQP_URI
-MONGOOSE_AMQP_USERNAME
-MONGOOSE_AMQP_PASSWORD
-MONGOOSE_AMQP_PORT
-MONGOOSE_AMQP_SERVICE //amqp service name
-```
-
-Example For cluster connections
-```
-MONGOOSE_AMQP_URI=amqp://guest:guest@example1.com:5672/v1?heartbeat=10,
-amqp://guest:guest@example2.com:5672/v1?heartbeat=10,
-amqp://guest:guest@example3.com:5672/v1?heartbeat=10
-```
+Publish queue after create or update by default exchange <br/>
 
 pattern queue name
 ```
-NODE_ENV.MONGOOSE_AMQP_SERVICE.model.create
-NODE_ENV.MONGOOSE_AMQP_SERVICE.model.update
+node_env.serviceName.create.model
+node_env.serviceName.update.model
 ```
 
 example
 ```
-staging.fleet.vehicles.create
+local.fleet.create.vehicles
 ```
 
 or
@@ -187,18 +170,15 @@ import { init } from 'sendit-mongoose-repository'
 
 init({
   service: 'myservice',
-  exchange: `exchange-service-caller`,
-  queueNameCreate: `${process.env.NODE_ENV}.${process.env.MONGOOSE_AMQP_SERVICE}.model.create`,
-  queueNameUpdate: `${process.env.NODE_ENV}.${process.env.MONGOOSE_AMQP_SERVICE}.model.update`,
-  vhosts: process.env.NODE_ENV,
+  vhosts: 'local',
   connection: {
     slashes: true,
     protocol: 'amqp',
-    hostname: process.env.MONGOOSE_AMQP_URI,
-    user: process.env.MONGOOSE_AMQP_USERNAME,
-    password: process.env.MONGOOSE_AMQP_PASSWORD,
-    vhost: `//${process.env.NODE_ENV}`,
-    port: process.env.MONGOOSE_AMQP_PORT,
+    hostname: '127.0.0.1',
+    user: 'guest',
+    password: 'guest',
+    vhost: `//local`,
+    port: 5672,
     options: {
       heartbeat: 5,
     },
@@ -207,4 +187,14 @@ init({
     },
   },
 })
+```
+
+Example For cluster connections
+
+```javascript
+connections: [
+        "amqp://guest:guest@example1.com:5672/v1?heartbeat=10",
+        "amqp://guest:guest@example2.com:5672/v1?heartbeat=10",
+        "amqp://guest:guest@example3.com:5672/v1?heartbeat=10"
+      ]
 ```
