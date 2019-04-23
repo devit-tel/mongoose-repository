@@ -8,6 +8,7 @@ declare var process: {
     MONGOOSE_AMQP_PASSWORD: string,
     MONGOOSE_AMQP_PORT: number,
     MONGOOSE_AMQP_SERVICE: string,
+    MONGOOSE_ENABLE_AMQP: string,
   }
 }
 let env = process.env.NODE_ENV
@@ -75,15 +76,17 @@ export async function init(config: any) {
 }
 
 export function amqpPublish(query: string, result: any, model: any) {
-  try {
-    Broker.publish('default_exchange', result, `${env}.${routingKey}.${query}.${model}`, (err: any, publication: any) => {
-      console.log(`Publish to ${env}.${routingKey}.${query}.${model}`)
-      if (err) console.error('AMQP can not publish')
-      publication.on('success', (messageId: any) => {
-        console.log('success and messageId is', messageId)
+  if (process.env.MONGOOSE_ENABLE_AMQP && process.env.MONGOOSE_ENABLE_AMQP === 'true') {
+    try {
+      Broker.publish('default_exchange', result, `${env}.${routingKey}.${query}.${model}`, (err: any, publication: any) => {
+        console.log(`Publish to ${env}.${routingKey}.${query}.${model}`)
+        if (err) console.error('AMQP can not publish')
+        publication.on('success', (messageId: any) => {
+          console.log('success and messageId is', messageId)
+        })
       })
-    })
-  } catch (error) {
+    } catch (error) {
+    }
   }
   return
 }
