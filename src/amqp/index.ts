@@ -78,13 +78,12 @@ export function amqpPublish(query: string, result: any, model: any) {
   try {
     Broker.publish('default_exchange', result, `${env}.${routingKey}.${query}.${model}`, (err: any, publication: any) => {
       console.log(`Publish to ${env}.${routingKey}.${query}.${model}`)
-      if (err) console.error('AMQP can not publish', err)
+      if (err) console.error('AMQP can not publish')
       publication.on('success', (messageId: any) => {
         console.log('success and messageId is', messageId)
       })
     })
   } catch (error) {
-    console.log('catch: ', error)
   }
   return
 }
