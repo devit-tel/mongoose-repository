@@ -152,6 +152,11 @@ return BarRepository.aggregatePaginate(filter, options)
 
 Publish queue after create or update by default exchange <br/>
 
+Add MONGOOSE_ENABLE_AMQP in .env for enable AMQP
+```javascript
+MONGOOSE_ENABLE_AMQP=true
+```
+
 pattern queue name
 ```
 node_env.serviceName.create.model
@@ -162,8 +167,6 @@ example
 ```
 local.fleet.create.vehicles
 ```
-
-or
 
 ```javascript
 import { init } from 'sendit-mongoose-repository'
