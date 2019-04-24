@@ -15,6 +15,7 @@ let env = process.env.NODE_ENV
 let routingKey = process.env.MONGOOSE_AMQP_SERVICE
 let isProduction = env === 'production'
 let amqpUrl = process.env.MONGOOSE_AMQP_URI ? process.env.MONGOOSE_AMQP_URI.split(',') : null
+let isInit = false
 
 let configHost = {}
 if (isProduction) {
@@ -44,6 +45,7 @@ if (isProduction) {
 export let Broker: any
 export async function init(config: any) {
   if (config) {
+    isInit=true
     env = config.vhosts
     routingKey = config.service
     delete config.service
@@ -76,9 +78,10 @@ export async function init(config: any) {
 }
 
 export function amqpPublish(query: string, result: any, model: any) {
-  if (process.env.MONGOOSE_ENABLE_AMQP && process.env.MONGOOSE_ENABLE_AMQP === 'true') {
+  if ((process.env.MONGOOSE_ENABLE_AMQP && process.env.MONGOOSE_ENABLE_AMQP === 'true') || isInit) {
     try {
-      Broker.publish('default_exchange', result, `${env}.${routingKey}.${query}.${model}`, (err: any, publication: any) => {
+      const queueName = `${env}.${routingKey}.${query}.${model}`.toLocaleLowerCase()
+      Broker.publish('default_exchange', result, queueName, (err: any, publication: any) => {
         console.log(`Publish to ${env}.${routingKey}.${query}.${model}`)
         if (err) {
           console.error('AMQP can not publish')
