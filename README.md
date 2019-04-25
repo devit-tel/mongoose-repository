@@ -172,7 +172,10 @@ local.fleet.create.vehicles
 import { init } from 'sendit-mongoose-repository'
 
 init({
-  service: 'myservice',
+  exchange: 'exchange-name',
+  models: ['model'],
+  ttl: 50000000000000, //millisecond
+  service: 'serviceName',
   vhosts: 'local',
   connection: {
     slashes: true,

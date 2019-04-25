@@ -113,6 +113,7 @@ export async function init(config: any) {
     service = config.service
     mongooseModel = config.models
     ttl = config.ttl
+    exchangeName = config.exchange
     delete config.ttl
     delete config.models
     delete config.service
