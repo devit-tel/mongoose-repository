@@ -150,14 +150,9 @@ return BarRepository.aggregatePaginate(filter, options)
 
 ## AMQP
 
-Publish queue after create or update by default exchange <br/>
+Publish queue after create or update <br/>
 
-Add MONGOOSE_ENABLE_AMQP in .env for enable AMQP
-```javascript
-MONGOOSE_ENABLE_AMQP=true
-```
-
-pattern queue name
+Pattern queue name
 ```
 node_env.serviceName.create.model
 node_env.serviceName.update.model
@@ -172,7 +167,10 @@ local.fleet.create.vehicles
 import { init } from 'sendit-mongoose-repository'
 
 init({
-  service: 'myservice',
+  exchange: 'exchange-name',
+  models: ['model'],
+  ttl: 50000000000000, //millisecond
+  service: 'serviceName',
   vhosts: 'local',
   connection: {
     slashes: true,
