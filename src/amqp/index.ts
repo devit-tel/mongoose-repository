@@ -136,7 +136,6 @@ export async function init(config: any) {
 
   Rascal.Broker.create(Rascal.withDefaultConfig(configRascal), (err: any, broker: any) => {
     if (err) {
-      console.log(err)
       console.error('###### connect AMQP failed ######')
     } else {
       console.log('###### connect AMQP success ######')
