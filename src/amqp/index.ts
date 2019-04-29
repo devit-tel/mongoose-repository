@@ -24,58 +24,38 @@ let service = process.env.MONGOOSE_AMQP_SERVICE
 let isProduction = env === 'production'
 let amqpUrl = process.env.MONGOOSE_AMQP_URI ? process.env.MONGOOSE_AMQP_URI.split(',') : null
 let mongooseModel = process.env.MONGOOSE_AMQP_MODEL ? process.env.MONGOOSE_AMQP_MODEL.split(',') : null
-let exchangeName = process.env.MONGOOSE_AMQP_EXCHANGE
+let exchangeName = `${env}.${process.env.MONGOOSE_AMQP_EXCHANGE}`
 let isInit = false
+let actions = ['update', 'create', 'delete']
 
 const generateConfig = () => {
   if (mongooseModel && mongooseModel.length > 0) {
     mongooseModel.map((model: any) => {
-      queues[`${env}.${service}.create.${model}`] = {
-        options: {
-          durable: true,
-          arguments: {
-            'x-message-ttl': +ttl,
-            'x-dead-letter-exchange': `${exchangeName}.create.expired`,
-            'x-dead-letter-routing-key': 'request_create_is_expired',
+      actions.map((action: any) => {
+        queues[`${env}.${service}.${action}.${model}`] = {
+          options: {
+            durable: true,
+            arguments: {
+              'x-message-ttl': +ttl,
+              'x-dead-letter-exchange': `${exchangeName}.${action}.expired`,
+              'x-dead-letter-routing-key': `request_${action}_is_expired`,
+            }
           }
         }
-      }
-      queues[`${env}.${service}.update.${model}`] = {
-        options: {
-          durable: true,
-          arguments: {
-            'x-message-ttl': +ttl,
-            'x-dead-letter-exchange': `${exchangeName}.update.expired`,
-            'x-dead-letter-routing-key': 'request_update_is_expired',
-          }
+        queues[`${env}.${service}.${action}.${model}.expired`] = {
+          options: { durable: true }
         }
-      }
-      queues[`${env}.${service}.create.${model}.expired`] = {
-        options: { durable: true }
-      },
-      queues[`${env}.${service}.update.${model}.expired`] = {
-        options: { durable: true }
-      }
-      publications[`${service}.create.${model}`] = {
-        exchange: [exchangeName],
-        routingKey: `${service}.create.${model}`
-      }
-      publications[`${service}.update.${model}`] = {
-        exchange: [exchangeName],
-        routingKey: `${service}.update.${model}`
-      }
-      publications[`request_create_is_expired`] = {
-        exchange: [`${exchangeName}.create.expired`],
-        routingKey: 'request_create_is_expired'
-      }
-      publications[`request_update_is_expired`] = {
-        exchange: [`${exchangeName}.update.expired`],
-        routingKey: 'request_update_is_expired'
-      }
-      bindings.push(`${exchangeName}[${service}.create.${model}] -> ${`${env}.${service}.create.${model}`}`)
-      bindings.push(`${exchangeName}[${service}.update.${model}] -> ${`${env}.${service}.update.${model}`}`)
-      bindings.push(`${exchangeName}.create.expired[request_create_is_expired] -> ${`${env}.${service}.create.${model}.expired`}`)
-      bindings.push(`${exchangeName}.update.expired[request_update_is_expired] -> ${`${env}.${service}.update.${model}.expired`}`)
+        publications[`${service}.${action}.${model}`] = {
+          exchange: [exchangeName],
+          routingKey: `${service}.${action}.${model}`
+        }
+        publications[`request_${action}_is_expired`] = {
+          exchange: [`${exchangeName}.${action}.expired`],
+          routingKey: `request_${action}_is_expired`
+        }
+        bindings.push(`${exchangeName}[${service}.${action}.${model}] -> ${`${env}.${service}.${action}.${model}`}`)
+        bindings.push(`${exchangeName}.${action}.expired[request_${action}_is_expired] -> ${`${env}.${service}.${action}.${model}.expired`}`)
+      })
     })
   }
 }
@@ -113,7 +93,7 @@ export async function init(config: any) {
     service = config.service
     mongooseModel = config.models
     ttl = config.ttl
-    exchangeName = config.exchange
+    exchangeName = `${env}.${config.exchange}`
     delete config.ttl
     delete config.models
     delete config.service
@@ -126,7 +106,7 @@ export async function init(config: any) {
     vhosts: {
       [`${env}`]: {
         ...configHost,
-        exchanges: [exchangeName, `${exchangeName}.create.expired`, `${exchangeName}.update.expired`],
+        exchanges: [exchangeName, `${exchangeName}.create.expired`, `${exchangeName}.update.expired`, `${exchangeName}.delete.expired`],
         queues,
         bindings,
         publications

@@ -105,13 +105,13 @@ class BaseRepository {
     return result
   }
   public async insertMany(data: any): Promise<any> {
-    let result = this.model.insertMany(data);
+    let result = await this.model.insertMany(data);
     amqpPublish('create', result, this.model.modelName)
 
     return result
   }
   public async update(query: any, data: any): Promise<any> {
-    let result = this.model.findOneAndUpdate(query, data, { new: true });
+    let result = await this.model.findOneAndUpdate(query, data, { new: true });
     amqpPublish('update', result, this.model.modelName)
 
     return result
@@ -123,9 +123,10 @@ class BaseRepository {
     });
   }
   public async delete(data: any): Promise<any> {
-    return this.model.delete
-      ? this.model.delete(data)
-      : this.model.remove(data);
+    let result = this.model.delete
+    ? await this.model.delete(data)
+    : await this.model.remove(data);
+    return result
   }
   public async aggregate(aggregate: any): Promise<any> {
     return this.model.aggregate(aggregate)
