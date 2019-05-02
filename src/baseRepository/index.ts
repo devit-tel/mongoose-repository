@@ -126,6 +126,8 @@ class BaseRepository {
     let result = this.model.delete
     ? await this.model.delete(data)
     : await this.model.remove(data);
+
+    amqpPublish('delete', { _id: data._id, ...result}, this.model.modelName)
     return result
   }
   public async aggregate(aggregate: any): Promise<any> {

@@ -24,7 +24,7 @@ let service = process.env.MONGOOSE_AMQP_SERVICE
 let isProduction = env === 'production'
 let amqpUrl = process.env.MONGOOSE_AMQP_URI ? process.env.MONGOOSE_AMQP_URI.split(',') : null
 let mongooseModel = process.env.MONGOOSE_AMQP_MODEL ? process.env.MONGOOSE_AMQP_MODEL.split(',') : null
-let exchangeName = `${env}.${process.env.MONGOOSE_AMQP_EXCHANGE}`
+let exchangeName = process.env.MONGOOSE_AMQP_EXCHANGE
 let isInit = false
 let actions = ['update', 'create', 'delete']
 
@@ -93,7 +93,7 @@ export async function init(config: any) {
     service = config.service
     mongooseModel = config.models
     ttl = config.ttl
-    exchangeName = `${env}.${config.exchange}`
+    exchangeName = config.exchange
     delete config.ttl
     delete config.models
     delete config.service
