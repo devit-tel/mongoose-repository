@@ -38,7 +38,7 @@ const generateConfig = () => {
             arguments: {
               'x-message-ttl': +ttl,
               'x-dead-letter-exchange': `${exchangeName}.${action}.expired`,
-              'x-dead-letter-routing-key': `request_${action}_is_expired`,
+              'x-dead-letter-routing-key': `${env}.request_${action}_is_expired`,
             }
           }
         }
