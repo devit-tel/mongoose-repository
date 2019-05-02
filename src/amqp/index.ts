@@ -24,7 +24,7 @@ let service = process.env.MONGOOSE_AMQP_SERVICE
 let isProduction = env === 'production'
 let amqpUrl = process.env.MONGOOSE_AMQP_URI ? process.env.MONGOOSE_AMQP_URI.split(',') : null
 let mongooseModel = process.env.MONGOOSE_AMQP_MODEL ? process.env.MONGOOSE_AMQP_MODEL.split(',') : null
-let exchangeName = process.env.MONGOOSE_AMQP_EXCHANGE
+let exchangeName = `${env}.${process.env.MONGOOSE_AMQP_EXCHANGE}`
 let isInit = false
 let actions = ['update', 'create', 'delete']
 
@@ -47,14 +47,14 @@ const generateConfig = () => {
         }
         publications[`${service}.${action}.${model}`] = {
           exchange: [exchangeName],
-          routingKey: `${service}.${action}.${model}`
+          routingKey: `${env}.${service}.${action}.${model}`
         }
         publications[`request_${action}_is_expired`] = {
           exchange: [`${exchangeName}.${action}.expired`],
-          routingKey: `request_${action}_is_expired`
+          routingKey: `${env}.request_${action}_is_expired`
         }
-        bindings.push(`${exchangeName}[${service}.${action}.${model}] -> ${`${env}.${service}.${action}.${model}`}`)
-        bindings.push(`${exchangeName}.${action}.expired[request_${action}_is_expired] -> ${`${env}.${service}.${action}.${model}.expired`}`)
+        bindings.push(`${exchangeName}[${env}.${service}.${action}.${model}] -> ${`${env}.${service}.${action}.${model}`}`)
+        bindings.push(`${exchangeName}.${action}.expired[${env}.request_${action}_is_expired] -> ${`${env}.${service}.${action}.${model}.expired`}`)
       })
     })
   }
@@ -93,7 +93,7 @@ export async function init(config: any) {
     service = config.service
     mongooseModel = config.models
     ttl = config.ttl
-    exchangeName = config.exchange
+    exchangeName = `${env}.${config.exchange}`
     delete config.ttl
     delete config.models
     delete config.service
