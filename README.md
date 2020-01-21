@@ -5,7 +5,7 @@ Include Plugin:
 - mongoose-delete (default options: { deletedAt: true, indexFields: true, overrideMethods: true })
 - mongoose-history
 - mongoose-paginate
-- ~~mongoose-timestamp~~  <b><span style="color:red">Deprecated version 1.1.9 change use mongoose provide timestamps</span></b>
+- ~~mongoose-timestamp~~  <b><span style="color:red">Deprecated version 1.1.10 change use mongoose provide timestamps</span></b>
 - mongoose-aggregate-paginate
 - rascal
 
