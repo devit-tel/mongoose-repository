@@ -5,13 +5,13 @@ Include Plugin:
 - mongoose-delete (default options: { deletedAt: true, indexFields: true, overrideMethods: true })
 - mongoose-history
 - mongoose-paginate
-- mongoose-timestamp
+- ~~mongoose-timestamp~~  <span style="color:red">Deprecated version 1.1.9 change use mongoose provide timestamps</span>
 - mongoose-aggregate-paginate
 - rascal
 
 ### install
 ```
-npm install sendit-mongoose-repository --save
+npm install sendit-mongoose-repository -save
 ```
 
 ## Create repo Example
@@ -98,7 +98,7 @@ var options = {
   page: 1, // required, start 1
   sort: {name: -1}, // optional, default: {_id: 1}, (ex. sort descending name)
   populate: 'company', // optional
-  select: '-_id -__v -password' // optional omit _id, __v, password  
+  select: '-_id -__v -password' // optional omit _id, __v, password
 }
 return BarRepository.find(filter, options)
 ```
