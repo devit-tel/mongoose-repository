@@ -1,6 +1,6 @@
 {
   "name": "sendit-mongoose-repository",
-  "version": "1.1.7",
+  "version": "1.1.10",
   "description": "A mongoose Repository based",
   "main": "./distribution/index.js",
   "types": "./distribution/index.d.ts",
@@ -13,7 +13,6 @@
     "mongoose",
     "repo",
     "repository",
-    "spksoft",
     "mongoose-repository"
   ],
   "publishConfig": {
@@ -43,7 +42,6 @@
     "mongoose-delete": "^0.4.0",
     "mongoose-history": "^0.6.0",
     "mongoose-paginate": "^5.0.3",
-    "mongoose-timestamp": "^0.6.0",
     "npm": "^6.4.1",
     "rascal": "^4.3.0"
   },
