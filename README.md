@@ -11,7 +11,7 @@ Include Plugin:
 
 ### install
 ```
-npm install sendit-mongoose-repository -save
+npm install sendit-mongoose-repository --save
 ```
 
 ## Create repo Example
