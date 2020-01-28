@@ -4,12 +4,14 @@ const omitv = (data: any) => {
   let result
   if (Array.isArray(data)) {
     result = data.map((val: any) => {
-      const { __v, ...rest } = val.toObject()
+      const rawValue = typeof val.toObject === "function" ? val.toObject() : val
+      const { __v, ...rest } = rawValue
       return rest
     })
   } else {
-    result =  { ...data.toObject() }
-    delete result.__v 
+    const rawData = typeof data.toObject === "function" ? data.toObject() : data
+    result = { ...rawData }
+    delete result.__v
   }
   return result
 }
