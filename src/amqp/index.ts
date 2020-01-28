@@ -38,7 +38,7 @@ const generateConfig = () => {
             arguments: {
               'x-message-ttl': +ttl,
               'x-dead-letter-exchange': `${exchangeName}.${action}.expired`,
-              'x-dead-letter-routing-key': `request_${action}_is_expired`,
+              'x-dead-letter-routing-key': `${env}.request_${action}_is_expired`,
             }
           }
         }
@@ -47,14 +47,14 @@ const generateConfig = () => {
         }
         publications[`${service}.${action}.${model}`] = {
           exchange: [exchangeName],
-          routingKey: `${service}.${action}.${model}`
+          routingKey: `${env}.${service}.${action}.${model}`
         }
         publications[`request_${action}_is_expired`] = {
           exchange: [`${exchangeName}.${action}.expired`],
-          routingKey: `request_${action}_is_expired`
+          routingKey: `${env}.request_${action}_is_expired`
         }
-        bindings.push(`${exchangeName}[${service}.${action}.${model}] -> ${`${env}.${service}.${action}.${model}`}`)
-        bindings.push(`${exchangeName}.${action}.expired[request_${action}_is_expired] -> ${`${env}.${service}.${action}.${model}.expired`}`)
+        bindings.push(`${exchangeName}[${env}.${service}.${action}.${model}] -> ${`${env}.${service}.${action}.${model}`}`)
+        bindings.push(`${exchangeName}.${action}.expired[${env}.request_${action}_is_expired] -> ${`${env}.${service}.${action}.${model}.expired`}`)
       })
     })
   }

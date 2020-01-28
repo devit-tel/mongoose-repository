@@ -1,5 +1,21 @@
 import { amqpPublish } from '../amqp'
 
+const omitv = (data: any) => {
+  let result
+  if (Array.isArray(data)) {
+    result = data.map((val: any) => {
+      const rawValue = typeof val.toObject === "function" ? val.toObject() : val
+      const { __v, ...rest } = rawValue
+      return rest
+    })
+  } else {
+    const rawData = typeof data.toObject === "function" ? data.toObject() : data
+    result = { ...rawData }
+    delete result.__v
+  }
+  return result
+}
+
 class BaseRepository {
   model: any = undefined;
   constructor(mongooseModel: any) {
@@ -100,19 +116,19 @@ class BaseRepository {
   public async create(data: any): Promise<any> {
     let result: any
     result = await this.model.create(data)
-    amqpPublish('create', result, this.model.modelName)
+    amqpPublish('create', omitv(result), this.model.modelName)
 
     return result
   }
   public async insertMany(data: any): Promise<any> {
     let result = await this.model.insertMany(data);
-    amqpPublish('create', result, this.model.modelName)
+    amqpPublish('create', omitv(result), this.model.modelName)
 
     return result
   }
   public async update(query: any, data: any): Promise<any> {
     let result = await this.model.findOneAndUpdate(query, data, { new: true });
-    amqpPublish('update', result, this.model.modelName)
+    amqpPublish('update', omitv(result), this.model.modelName)
 
     return result
   }
@@ -124,8 +140,10 @@ class BaseRepository {
   }
   public async delete(data: any): Promise<any> {
     let result = this.model.delete
-    ? await this.model.delete(data)
-    : await this.model.remove(data);
+      ? await this.model.delete(data)
+      : await this.model.remove(data);
+    const { _id } = data
+    amqpPublish('delete', { _id }, this.model.modelName)
     return result
   }
   public async aggregate(aggregate: any): Promise<any> {
